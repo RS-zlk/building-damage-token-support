@@ -1,0 +1,42 @@
+{
+  "input_size_pixels": [224, 224],
+  "encoder": "Swin-Tiny",
+  "stage_3_feature_lattice": [14, 14, 384],
+  "parameter_count_per_model": 27981697,
+  "support_rules": {
+    "GP": {
+      "name": "global pooling",
+      "definition": "Mean pooling over all 196 Stage-3 tokens."
+    },
+    "FC": {
+      "name": "fixed-center support",
+      "definition": "Four fixed central interior tokens and twelve context tokens; no footprint is used when constructing support."
+    },
+    "FI": {
+      "name": "footprint-informed support",
+      "definition": "Four highest-coverage interior tokens and twelve nearest zero-coverage context tokens. Context tokens are ranked by the minimum Euclidean distance from the token center to a footprint pixel."
+    }
+  },
+  "training": {
+    "binary_head": ["intact", "damaged"],
+    "auxiliary_head": ["intact", "minor", "major", "destroyed"],
+    "loss": "L_binary + L_aux",
+    "recipes": {
+      "R1_CE_baseline": "Cross-entropy for both heads.",
+      "R2_focal": "Focal modulation gamma=2 for both heads; damaged-class binary weight=1.5.",
+      "R3_focal": "Focal modulation gamma=2 for both heads; damaged-class binary weight=1.5."
+    },
+    "selection_and_inference": "Only binary logits are used for checkpoint selection and reported inference metrics."
+  },
+  "primary_evaluation": {
+    "design": "3 recipes x 3 support rules x 3 Turkey leave-one-city-out folds x 3 seeds",
+    "selected_recipe": "R1_CE_baseline",
+    "checkpoints": 27,
+    "frozen_threshold": 0.48,
+    "bootstrap": "Paired percentile bootstrap stratified by Turkey city, with building as the resampling unit and 2000 replicates."
+  },
+  "robustness_protocols": {
+    "P1": "Footprint-support perturbation: image fixed; perturb the footprint and then construct FI support.",
+    "P2": "Candidate-localization perturbation: co-translate image and footprint; FC remains centered and FI moves with the building."
+  }
+}

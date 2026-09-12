@@ -1,0 +1,23 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Data, checkpoints, and generated results are released separately or regenerated.
+data/
+checkpoints/
+results/
+outputs/
+*.pt
+*.pth
+*.ckpt
+*.parquet
+*.tif
+*.tiff
+*.zip
+
+# Machine-specific run records
+run_metadata.json
+command.txt
+run_config.json

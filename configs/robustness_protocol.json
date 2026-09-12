@@ -1,0 +1,45 @@
+{
+  "protocol": "R2-BDA post-hoc inference-only robustness protocol",
+  "status": "POST_HOC_PROTOCOL",
+  "frozen_inputs": {
+    "selected_recipe_id": "R1_CE_baseline",
+    "threshold_tau_star": 0.48,
+    "checkpoints": "27 selected checkpoints: 3 support rules x 3 Turkey LOCO folds x 3 seeds"
+  },
+  "cohorts": {
+    "Turkey_LOCO_primary": {"n_samples": 9169},
+    "Venezuela_historical_external": {"n_samples": 2021}
+  },
+  "experiments": {
+    "R1_footprint_error": {
+      "models": ["FI"],
+      "states": [
+        {"id": "clean", "type": "clean"},
+        {"id": "shift_8px", "type": "zero_filled_deterministic_shift", "pixels": 8},
+        {"id": "shift_16px", "type": "zero_filled_deterministic_shift", "pixels": 16},
+        {"id": "shift_32px", "type": "zero_filled_deterministic_shift", "pixels": 32},
+        {"id": "shift_48px", "type": "zero_filled_deterministic_shift", "pixels": 48},
+        {"id": "erode_k3", "type": "binary_erosion_3x3", "iterations": 3},
+        {"id": "erode_k5", "type": "binary_erosion_3x3", "iterations": 5},
+        {"id": "dilate_k3", "type": "binary_dilation_3x3", "iterations": 3},
+        {"id": "dilate_k5", "type": "binary_dilation_3x3", "iterations": 5}
+      ]
+    },
+    "R2_candidate_localization_error": {
+      "models": ["FC", "FI"],
+      "states": [
+        {"id": "center_0px", "type": "clean", "pixels": 0},
+        {"id": "center_8px", "type": "deterministic_reflect_image_translation", "pixels": 8},
+        {"id": "center_16px", "type": "deterministic_reflect_image_translation", "pixels": 16},
+        {"id": "center_32px", "type": "deterministic_reflect_image_translation", "pixels": 32},
+        {"id": "center_48px", "type": "deterministic_reflect_image_translation", "pixels": 48}
+      ]
+    }
+  },
+  "analysis": {
+    "primary_metric": "binary balanced accuracy",
+    "bootstrap": "2000 paired, city-stratified building bootstrap replicates.",
+    "practical_margin_pp": 2.0,
+    "margin_interpretation": "Post-hoc exploratory practical margin; not a noninferiority or equivalence test."
+  }
+}
